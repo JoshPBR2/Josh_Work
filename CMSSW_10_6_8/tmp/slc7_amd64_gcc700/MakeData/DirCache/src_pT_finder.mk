@@ -1,0 +1,2 @@
+ALL_SUBSYSTEMS+=pT_finder
+subdirs_src_pT_finder = src_pT_finder_pT_analyzer

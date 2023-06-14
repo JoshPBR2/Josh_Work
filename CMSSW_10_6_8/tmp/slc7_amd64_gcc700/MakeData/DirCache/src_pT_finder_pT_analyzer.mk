@@ -1,0 +1,2 @@
+ALL_PACKAGES += pT_finder/pT_analyzer
+subdirs_src_pT_finder_pT_analyzer := src_pT_finder_pT_analyzer_plugins src_pT_finder_pT_analyzer_python src_pT_finder_pT_analyzer_test

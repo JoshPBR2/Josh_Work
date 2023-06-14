@@ -1,0 +1,2 @@
+01:/usr/bin/rm -f lib/slc7_amd64_gcc700/pluginpT_finderpT_analyzerAuto.so lib/slc7_amd64_gcc700/pT_finderpT_analyzerAuto.edmplugin
+90:edmPluginRefresh lib/slc7_amd64_gcc700
