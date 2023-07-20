@@ -22,6 +22,9 @@
 
 // user include files
 #include "FWCore/Framework/interface/Frameworkfwd.h"
+#include "FWCore/ServiceRegistry/interface/Service.h"
+#include "CommonTools/UtilAlgos/interface/TFileService.h"
+#include "TH1.h"
 #include "FWCore/Framework/interface/one/EDAnalyzer.h"
 
 #include "FWCore/Framework/interface/Event.h"
@@ -58,6 +61,7 @@ class pT_analyzer : public edm::one::EDAnalyzer<edm::one::SharedResources>  {
 
       // ----------member data ---------------------------
       edm::EDGetTokenT<TrackCollection> tracksToken_;  //used to select what tracks to read from configuration file
+      double trackPtMin_;
 };
 
 //
@@ -73,9 +77,12 @@ class pT_analyzer : public edm::one::EDAnalyzer<edm::one::SharedResources>  {
 //
 pT_analyzer::pT_analyzer(const edm::ParameterSet& iConfig)
  :
-  tracksToken_(consumes<TrackCollection>(iConfig.getUntrackedParameter<edm::InputTag>("tracks")))
+  tracksToken_(consumes<TrackCollection>(iConfig.getUntrackedParameter<edm::InputTag>("tracks"))),
+  trackPtMin_(iConfig.getParameter<double>("trackPtMin")) {
 
-{
+#ifdef THIS_IS_AN_EVENTSETUP_EXAMPLE
+	setupDataToken_ = esConsumes<SetupData, SetupRecord>();
+#endif
    //now do what ever initialization is needed
 
 }
@@ -99,15 +106,22 @@ void
 pT_analyzer::analyze(const edm::Event& iEvent, const edm::EventSetup& iSetup)
 {
    using namespace edm;
+	using namespace std;
 
-   for(const auto& track : iEvent.get(tracksToken_) ) {
-      // do something with track parameters, e.g, plot the charge.
-      // int charge = track.charge();
-   }
+	int nTrack = 0;
+	for (const auto& track : iEvent.get(tracksToken_)) {
+		// dp something with the track parameters, e.g. plot the change
+		// int charge = track.charge();
+		if(track.pt() < trackPtMin_) continue;
+		nTrack++;
+	}
+cout<<"nTrack = "<<nTrack<<endl;
 
 #ifdef THIS_IS_AN_EVENTSETUP_EXAMPLE
-   ESHandle<SetupData> pSetup;
-   iSetup.get<SetupRecord>().get(pSetup);
+
+	auto setup = iSetup.getData(setupToken_);
+
+	auto pSetup = iSetup.getHandle(setupToken_);
 #endif
 }
 
@@ -123,7 +137,6 @@ void
 pT_analyzer::endJob()
 {
 }
-
 // ------------ method fills 'descriptions' with the allowed parameters for the module  ------------
 void
 pT_analyzer::fillDescriptions(edm::ConfigurationDescriptions& descriptions) {
