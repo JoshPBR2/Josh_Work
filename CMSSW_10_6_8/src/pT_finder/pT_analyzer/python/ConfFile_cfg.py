@@ -13,9 +13,16 @@ process.source = cms.Source("PoolSource",
             )
         )
 
+process.TFileService = cms.Service("TFileService",
+					fileName = cms.string('histodemo.root')
+				)
+
+
 process.ptfinder = cms.EDAnalyzer('pT_analyzer',
         tracks = cms.untracked.InputTag('generalTracks'),
-	trackPtMin = cms.double(0.3)
+	trackPtMin = cms.double(0.3),
+	trackEtaMin = cms.double(-2.4),
+	trackEtaMax = cms.double(2.4)
         )
 
 process.p = cms.Path(process.ptfinder)

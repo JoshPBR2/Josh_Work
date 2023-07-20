@@ -62,6 +62,9 @@ class pT_analyzer : public edm::one::EDAnalyzer<edm::one::SharedResources>  {
       // ----------member data ---------------------------
       edm::EDGetTokenT<TrackCollection> tracksToken_;  //used to select what tracks to read from configuration file
       double trackPtMin_;
+      double trackEtaMin_;
+      double trackEtaMax_;
+      TH1F *demohisto_ntracks;
 };
 
 //
@@ -78,7 +81,13 @@ class pT_analyzer : public edm::one::EDAnalyzer<edm::one::SharedResources>  {
 pT_analyzer::pT_analyzer(const edm::ParameterSet& iConfig)
  :
   tracksToken_(consumes<TrackCollection>(iConfig.getUntrackedParameter<edm::InputTag>("tracks"))),
-  trackPtMin_(iConfig.getParameter<double>("trackPtMin")) {
+  trackPtMin_(iConfig.getParameter<double>("trackPtMin")),
+  trackEtaMin_(iConfig.getParameter<double>("trackEtaMin")),
+  trackEtaMax_(iConfig.getParameter<double>("trackEtaMax"))
+ {
+
+edm::Service<TFileService> fs;
+demohisto_ntracks = fs->make<TH1F>("nTracks" , "nTracks" , 100 , 0 , 5000 );
 
 #ifdef THIS_IS_AN_EVENTSETUP_EXAMPLE
 	setupDataToken_ = esConsumes<SetupData, SetupRecord>();
@@ -113,9 +122,11 @@ pT_analyzer::analyze(const edm::Event& iEvent, const edm::EventSetup& iSetup)
 		// dp something with the track parameters, e.g. plot the change
 		// int charge = track.charge();
 		if(track.pt() < trackPtMin_) continue;
+		if(track.eta() < trackEtaMin_ || track.eta() > trackEtaMax_) continue;
 		nTrack++;
 	}
 cout<<"nTrack = "<<nTrack<<endl;
+demohisto_ntracks->Fill(nTrack);
 
 #ifdef THIS_IS_AN_EVENTSETUP_EXAMPLE
 
