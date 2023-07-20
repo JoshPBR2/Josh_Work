@@ -20,7 +20,7 @@ process.TFileService = cms.Service("TFileService",
 
 process.ptfinder = cms.EDAnalyzer('pT_analyzer',
         tracks = cms.untracked.InputTag('generalTracks'),
-	trackPtMin = cms.double(0.3),
+	trackPtMin = cms.double(10),
 	trackEtaMin = cms.double(-2.4),
 	trackEtaMax = cms.double(2.4)
         )
